@@ -22,6 +22,15 @@
     </select>
   </div>
 
+  <label>Change status</label>
+<select [(ngModel)]="selectedStatus">
+  <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+</select>
+
+<button class="update-button" (click)="changeStatus(selectedStatus)">
+  Update Status
+</button>
+
   <button class="secondary" (click)="logout()">Logout</button>
 
   <div *ngIf="error" class="error">{{ error }}</div>

@@ -4,13 +4,15 @@ import { Router, RouterLink } from '@angular/router';
 import { EmployeeService } from '../services/employee.service';
 import { AuthService } from '../services/auth.service';
 import { EmployeeMe } from '../models';
+import { FormsModule } from '@angular/forms';   // <-- IMPORTANT
 
 @Component({
   selector: 'app-availability',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink
+    RouterLink,
+    FormsModule         // <-- REQUIRED for ngModel
   ],
   templateUrl: './availability.component.html',
   styleUrls: ['./availability.component.css']
@@ -23,9 +25,13 @@ export class AvailabilityComponent implements OnInit {
   error: string | null = null;
   success: string | null = null;
 
+  // Dropdown values
   statuses: Array<'AVAILABLE' | 'UNAVAILABLE' | 'ON_LEAVE'> = [
     'AVAILABLE', 'UNAVAILABLE', 'ON_LEAVE'
   ];
+
+  // ⬅️ Selected dropdown value (separate from employee data)
+  selectedStatus: 'AVAILABLE' | 'UNAVAILABLE' | 'ON_LEAVE' = 'AVAILABLE';
 
   constructor(
     private employeeService: EmployeeService,
@@ -44,6 +50,7 @@ export class AvailabilityComponent implements OnInit {
     this.employeeService.getSelf().subscribe({
       next: (emp) => {
         this.employee = emp;
+        this.selectedStatus = emp.availabilityStatus;  // <-- set dropdown default
         this.loading = false;
       },
       error: (err) => {
@@ -63,6 +70,7 @@ export class AvailabilityComponent implements OnInit {
     this.employeeService.updateAvailability(status).subscribe({
       next: (emp) => {
         this.employee = emp;
+        this.selectedStatus = emp.availabilityStatus;  // <-- refresh UI
         this.saving = false;
         this.success = 'Availability updated';
       },
