@@ -22,13 +22,10 @@ module "security_groups" {
 ###############################
 module "rds" {
   source             = "./modules/rds"
-  vpc_id             = module.vpc.vpc_id
   public_subnet_ids  = module.vpc.public_subnet_ids
   rds_sg_id          = module.security_groups.rds_sg_id
   db_master_username = var.db_master_username
   db_master_password = var.db_master_password
-  aws_region         = var.aws_region
-  aws_account_id     = data.aws_caller_identity.current.account_id
 }
 
 ###############################
@@ -36,7 +33,6 @@ module "rds" {
 ###############################
 module "ec2" {
   source           = "./modules/ec2"
-  vpc_id           = module.vpc.vpc_id
   public_subnet_id = module.vpc.public_subnet_ids[0]
   ec2_sg_id        = module.security_groups.ec2_sg_id
   ami_id           = var.ami_id
