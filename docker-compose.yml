@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: employee-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: employee_availability
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    # ❌ REMOVE PORTS to avoid conflict with local MySQL
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-net
+
+  backend:
+    build: ./backend
+    container_name: employee-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/employee_availability
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppassword
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - app-net
+
+  frontend:
+    build: ./frontend
+    container_name: employee-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - app-net
+
+networks:
+  app-net:
+
+volumes:
+  mysql-data:
