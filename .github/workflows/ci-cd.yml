@@ -59,6 +59,3 @@ jobs:
 
       - name: Build frontend
         run: npm run start
-
-      - name: Build frontend
-        run: ng build
