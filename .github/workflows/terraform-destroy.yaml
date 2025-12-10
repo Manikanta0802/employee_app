@@ -1,0 +1,46 @@
+name: Terraform Destroy (OIDC)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm destroying the infrastructure'
+        required: true
+        default: 'no'
+
+jobs:
+  terraform-destroy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Check confirmation
+        if: ${{ github.event.inputs.confirm != 'destroy' }}
+        run: |
+          echo "You must type 'destroy' in the confirm field to run this workflow."
+          exit 1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Terraform Init
+        run: terraform init -no-color
+
+      - name: Terraform Destroy
+        env:
+          TF_VAR_db_master_password: ${{ secrets.DB_MASTER_PASSWORD }}
+        run: terraform destroy -auto-approve -no-color
