@@ -8,7 +8,7 @@ variable "ec2_sg_id" {
   type        = string
 }
 
-variable "ami_id" {
+variable "app_ami_id" {
   description = "AMI ID for the EC2 app server"
   type        = string
 }
