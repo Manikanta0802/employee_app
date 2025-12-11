@@ -1,31 +1,25 @@
-# frontend/Dockerfile
-
-# Stage 1: build angular app
-FROM node:18-alpine AS build
+# Stage 1: Build Angular App
+FROM node:20 AS build
 
 WORKDIR /app
 
-# copy package files first for better caching
+# Copy package files
 COPY package*.json ./
-COPY package-lock.json ./
 
-# install Angular CLI and dependencies
+# Install Angular CLI globally + dependencies
 RUN npm install -g @angular/cli && npm install
 
-# copy source
+# Copy all source files
 COPY . .
 
-# build (change configuration if you use a different name)
+# Build Angular using npx (uses local CLI and avoids permission issues)
 RUN npx ng build --configuration production
 
-# Stage 2: serve with nginx
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Remove default nginx static files
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy built files from builder
-# Adjust the dist folder name if your project name differs
 COPY --from=build /app/dist/employee-availability-frontend /usr/share/nginx/html
 
 EXPOSE 80
