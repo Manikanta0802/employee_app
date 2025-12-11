@@ -1,0 +1,21 @@
+name: Trigger EC2 Reboot After CI
+
+on:
+  workflow_run:
+    workflows: ["Backend & Frontend CI"]
+    types:
+      - completed
+
+jobs:
+  notify-infra:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Infra Repo Workflow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.INFRA_TRIGGER_TOKEN }}   # GitHub PAT (workflow:write)
+          repository: Manikanta0802/employee_app
+          event-type: reboot-ec2
+          client-payload: '{"update":"new-app-version"}'
