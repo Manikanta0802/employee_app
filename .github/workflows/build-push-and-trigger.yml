@@ -2,7 +2,7 @@ name: Build & Deploy App via GHCR
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
 
