@@ -16,7 +16,7 @@ RUN npm install -g @angular/cli && npm install
 COPY . .
 
 # build (change configuration if you use a different name)
-RUN npm run start --configuration production
+RUN npm start --configuration production
 
 # Stage 2: serve with nginx
 FROM nginx:alpine
