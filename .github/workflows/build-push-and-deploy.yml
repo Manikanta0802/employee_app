@@ -88,23 +88,3 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Get App EC2 instance id (by tag: Name=app-server)
-        id: get_instance
-        run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=app-server" \
-            --query "Reservations[].Instances[?State.Name=='running'] | [0].InstanceId" \
-            --output text)
-          echo "instance_id=${INSTANCE_ID}" >> $GITHUB_OUTPUT
-          echo "Found instance: ${INSTANCE_ID}"
-          
-      - name: Get RDS Endpoint
-        id: get_rds
-        run: |
-          DB_HOST=$(aws rds describe-db-instances \
-              --filters "Name=tag:Name,Values=employees-db" \
-              --query "DBInstances[0].Endpoint.Address" \
-              --output text)
-
-          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
