@@ -88,3 +88,51 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get App EC2 instance id (by tag: Name=app-server)
+        id: get_instance
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=app-server" \
+            --query "Reservations[].Instances[?State.Name=='running'].InstanceId | [0]" \
+            --output text)
+
+          echo "Found instance: $INSTANCE_ID"
+
+          if [[ -z "$INSTANCE_ID" || "$INSTANCE_ID" == "None" ]]; then
+            echo "No running app-server found!"
+            exit 1
+          fi
+
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Get RDS Endpoint
+        id: get_rds
+        run: |
+          DB_HOST=$(aws rds describe-db-instances \
+            --db-instance-identifier employees-db \
+            --query "DBInstances[0].Endpoint.Address" \
+            --output text)
+
+          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
+
+      - name: Trigger SSM Run Command (deploy.sh)
+        if: ${{ steps.get_instance.outputs.instance_id }}
+        env:
+          INSTANCE_ID: ${{ steps.get_instance.outputs.instance_id }}
+          DB_HOST: ${{ steps.get_rds.outputs.db_host }}
+          BUILD_NUMBER: ${{ github.run_number }}
+          DB_PASSWORD: ${{ secrets.DB_MASTER_PASSWORD }}
+        run: >-
+          aws ssm send-command
+          --instance-ids "${{ env.INSTANCE_ID }}"
+          --document-name "AWS-RunShellScript"
+          --comment "Deploy build #${{ env.BUILD_NUMBER }}"
+          --parameters 'commands=[
+            "DB_HOST=${{ env.DB_HOST }}",
+            "DB_USER=admin",
+            "DB_PASS=${{ env.DB_PASSWORD }}",
+            "BACKEND_IMAGE=ghcr.io/${{ env.REPO_OWNER_LC }}/employee-backend:${{ env.BUILD_NUMBER }}",
+            "FRONTEND_IMAGE=ghcr.io/${{ env.REPO_OWNER_LC }}/employee-frontend:${{ env.BUILD_NUMBER }}",
+            "/opt/app/deploy.sh"
+          ]'
