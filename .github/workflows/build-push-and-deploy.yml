@@ -115,19 +115,17 @@ jobs:
           INSTANCE_ID: ${{ steps.get_instance.outputs.instance_id }}
           DB_HOST: ${{ steps.get_rds.outputs.db_host }}
           BUILD_NUMBER: ${{ github.run_number }}
-        run: |
-          COMMAND=$(cat << 'EOF'
-          DB_HOST=${DB_HOST}
-          DB_USER=admin
-          DB_PASS=${DB_PASS}
-          BACKEND_IMAGE=ghcr.io/${REPO_OWNER_LC}/employee-backend:${BUILD_NUMBER}
-          FRONTEND_IMAGE=ghcr.io/${REPO_OWNER_LC}/employee-frontend:${BUILD_NUMBER}
-          /opt/app/deploy.sh
-          EOF
-          )
-
-          aws ssm send-command \
-            --instance-ids "$INSTANCE_ID" \
-            --document-name "AWS-RunShellScript" \
-            --comment "Deploy build #${BUILD_NUMBER}" \
-            --parameters commands=["$COMMAND"]
+          DB_PASSWORD: ${{ secrets.DB_MASTER_PASSWORD }}
+        run: >-
+          aws ssm send-command
+          --instance-ids "${{ env.INSTANCE_ID }}"
+          --document-name "AWS-RunShellScript"
+          --comment "Deploy build #${{ env.BUILD_NUMBER }}"
+          --parameters 'commands=[
+            "DB_HOST=${{ env.DB_HOST }}",
+            "DB_USER=admin",
+            "DB_PASS=${{ env.DB_PASSWORD }}",
+            "BACKEND_IMAGE=ghcr.io/${{ env.REPO_OWNER_LC }}/employee-backend:${{ env.BUILD_NUMBER }}",
+            "FRONTEND_IMAGE=ghcr.io/${{ env.REPO_OWNER_LC }}/employee-frontend:${{ env.BUILD_NUMBER }}",
+            "/opt/app/deploy.sh"
+          ]'
