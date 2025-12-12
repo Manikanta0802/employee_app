@@ -93,15 +93,8 @@ jobs:
         id: get_instance
         run: |
           INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=app-server" \
-            --query "Reservations[].Instances[?State.Name=='running'].InstanceId | [0]" \
-            --output text)
-
-          echo "Found instance: $INSTANCE_ID"
-
-          if [[ -z "$INSTANCE_ID" || "$INSTANCE_ID" == "None" ]]; then
-            echo "No running app-server found!"
-            exit 1
-          fi
+            --filters "Name=tag:Name,Values=app-server" "Name=instance-state-name,Values=running" \
+            --query "Reservations[*].Instances[*].InstanceId" \
+            --output text | head -n1)
 
           echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
