@@ -79,3 +79,48 @@ jobs:
         run: |
           docker push ghcr.io/${REPO_OWNER_LC}/employee-backend:${{ github.run_number }}
           docker push ghcr.io/${REPO_OWNER_LC}/employee-frontend:${{ github.run_number }}
+
+      # ---------------------------
+      # Trigger deployment on EC2 using SSM
+      # ---------------------------
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get App EC2 instance id (by tag: Name=app-server)
+        id: get_instance
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=app-server" \
+            --query "Reservations[].Instances[?State.Name=='running'] | [0].InstanceId" \
+            --output text)
+          echo "instance_id=${INSTANCE_ID}" >> $GITHUB_OUTPUT
+          echo "Found instance: ${INSTANCE_ID}"
+          
+      - name: Get RDS Endpoint
+        id: get_rds
+        run: |
+          DB_HOST=$(aws rds describe-db-instances \
+              --filters "Name=tag:Name,Values=employees-db" \
+              --query "DBInstances[0].Endpoint.Address" \
+              --output text)
+
+          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
+
+          
+      - name: Trigger SSM Run Command (deploy.sh)
+        if: ${{ steps.get_instance.outputs.instance_id != 'None' && steps.get_instance.outputs.instance_id != '' }}
+        run: |
+          echo "Triggering SSM deploy on ${{ steps.get_instance.outputs.instance_id }}"
+          aws ssm send-command \
+            --instance-ids "${{ steps.get_instance.outputs.instance_id }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy CI build" \
+            --parameters commands=["DB_HOST='${{ steps.get_rds.outputs.db_host }}' \
+                                    DB_USER='admin' \
+                                    DB_PASS='${{ secrets.DB_MASTER_PASSWORD }}' \
+                                    BACKEND_IMAGE='${{ env.BACKEND_IMAGE }}' \
+                                    FRONTEND_IMAGE='${{ env.FRONTEND_IMAGE }}' \
+                                    /opt/app/deploy.sh"]
