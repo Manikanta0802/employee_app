@@ -80,3 +80,22 @@ jobs:
           docker push ghcr.io/${REPO_OWNER_LC}/employee-backend:${{ github.run_number }}
           docker push ghcr.io/${REPO_OWNER_LC}/employee-frontend:${{ github.run_number }}
 
+      # ---------------------------
+      # Trigger deployment on EC2 using SSM
+      # ---------------------------
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get App EC2 instance id
+        id: get_instance
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=app-server" "Name=instance-state-name,Values=running" \
+            --query "Reservations[*].Instances[*].InstanceId" \
+            --output text | head -n1)
+
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+          echo "Found instance: $INSTANCE_ID"
