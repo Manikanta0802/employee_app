@@ -108,7 +108,7 @@ jobs:
         id: get_rds
         run: |
           DB_HOST=$(aws rds describe-db-instances \
-            --filters "Name=tag:Name,Values=employees-db" \
+            --db-instance-identifier employees-db \
             --query "DBInstances[0].Endpoint.Address" \
             --output text)
 
