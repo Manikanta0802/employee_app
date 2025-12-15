@@ -103,3 +103,33 @@ jobs:
 
           echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
           echo "Found instance: $INSTANCE_ID"
+
+      - name: Get RDS Endpoint
+        id: get_rds
+        run: |
+          DB_HOST=$(aws rds describe-db-instances \
+            --filters "Name=tag:Name,Values=employees-db" \
+            --query "DBInstances[0].Endpoint.Address" \
+            --output text)
+
+          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
+          echo "Resolved DB endpoint: $DB_HOST"
+
+      - name: Trigger SSM Deploy Script
+        if: ${{ steps.get_instance.outputs.instance_id != '' }}
+        run: |
+          BACKEND_IMAGE="ghcr.io/${REPO_OWNER_LC}/employee-backend:${{ github.run_number }}"
+          FRONTEND_IMAGE="ghcr.io/${REPO_OWNER_LC}/employee-frontend:${{ github.run_number }}"
+          
+          aws ssm send-command \
+            --instance-ids "${{ steps.get_instance.outputs.instance_id }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy CI build" \
+            --parameters "commands=[
+              \"DB_HOST=${{ steps.get_rds.outputs.db_host }} \
+                DB_USER=admin \
+                DB_PASS=${{ secrets.DB_MASTER_PASSWORD }} \
+                BACKEND_IMAGE=$BACKEND_IMAGE \
+                FRONTEND_IMAGE=$FRONTEND_IMAGE \
+                /opt/app/deploy.sh\"
+            ]"
