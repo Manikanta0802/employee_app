@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { AuthResponse } from '../models';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiBaseUrl}/api`;
+  private apiUrl = `/api`;
   private tokenKey = 'ea_token';
 
   currentUser$ = new BehaviorSubject<AuthResponse | null>(null);
