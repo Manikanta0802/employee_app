@@ -126,7 +126,9 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy CI build" \
             --parameters "commands=[
-              \"DB_HOST=${{ steps.get_rds.outputs.db_host }} \
+              \"GHCR_USER=${{ github.repository_owner }} \
+                GHCR_TOKEN=${{ secrets.GHCR_PAT }} \
+                DB_HOST=${{ steps.get_rds.outputs.db_host }} \
                 DB_USER=admin \
                 DB_PASS=${{ secrets.DB_MASTER_PASSWORD }} \
                 BACKEND_IMAGE=$BACKEND_IMAGE \
