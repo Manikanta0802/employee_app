@@ -10,6 +10,10 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
+  // =====================
+  // EMPLOYEE
+  // =====================
+
   getSelf(): Observable<EmployeeMe> {
     return this.http.get<EmployeeMe>(`${this.apiUrl}/employees/me`);
   }
@@ -23,7 +27,16 @@ export class EmployeeService {
     );
   }
 
-  // ADMIN
+  // =====================
+  // ADMIN / MANAGER
+  // =====================
+
+  getAll(): Observable<EmployeeMe[]> {
+    return this.http.get<EmployeeMe[]>(
+      `${this.apiUrl}/admin/employees`
+    );
+  }
+
   create(data: {
     name: string;
     email: string;
@@ -31,6 +44,9 @@ export class EmployeeService {
     role: string;
     managerId?: number | null;
   }) {
-    return this.http.post(`${this.apiUrl}/admin/create`, data);
+    return this.http.post(
+      `${this.apiUrl}/admin/create`,
+      data
+    );
   }
 }

@@ -36,32 +36,37 @@ export class ManagerComponent implements OnInit {
     this.loadDashboard();
   }
 
-  loadDashboard() {
+  loadDashboard(): void {
     this.loading = true;
+    this.error = null;
 
     this.employeeService.getAll().subscribe({
-      next: team => {
+      next: (team: EmployeeMe[]) => {
         this.team = team;
         this.loadAttendance();
         this.loadLeaves();
       },
-      error: () => {
-        this.error = 'Failed to load team';
+      error: (err: any) => {
+        this.error = err?.error || 'Failed to load team';
         this.loading = false;
       }
     });
   }
 
-  loadAttendance() {
+  loadAttendance(): void {
     this.attendanceService.myAttendance().subscribe({
-      next: data => this.attendance = data,
-      error: () => this.error = 'Failed to load attendance'
+      next: (data: Attendance[]) => {
+        this.attendance = data;
+      },
+      error: () => {
+        this.error = 'Failed to load attendance';
+      }
     });
   }
 
-  loadLeaves() {
+  loadLeaves(): void {
     this.leaveService.teamLeaves().subscribe({
-      next: data => {
+      next: (data: LeaveRequest[]) => {
         this.leaves = data;
         this.loading = false;
       },
@@ -72,19 +77,19 @@ export class ManagerComponent implements OnInit {
     });
   }
 
-  approve(id: number) {
+  approve(id: number): void {
     this.leaveService.approve(id).subscribe(() => {
       this.loadLeaves();
     });
   }
 
-  reject(id: number) {
+  reject(id: number): void {
     this.leaveService.reject(id).subscribe(() => {
       this.loadLeaves();
     });
   }
 
-  logout() {
+  logout(): void {
     this.auth.logout();
     location.href = '/login';
   }

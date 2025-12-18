@@ -21,7 +21,7 @@ export class AdminComponent implements OnInit {
   name = '';
   email = '';
   password = '';
-  role = 'EMPLOYEE';
+  role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN' = 'EMPLOYEE';
   managerId: number | null = null;
 
   loading = true;
@@ -37,21 +37,23 @@ export class AdminComponent implements OnInit {
     this.loadEmployees();
   }
 
-  loadEmployees() {
+  loadEmployees(): void {
     this.loading = true;
+    this.error = null;
+
     this.employeeService.getAll().subscribe({
-      next: data => {
+      next: (data: EmployeeMe[]) => {
         this.employees = data;
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Failed to load employees';
+      error: (err: any) => {
+        this.error = err?.error || 'Failed to load employees';
         this.loading = false;
       }
     });
   }
 
-  createEmployee() {
+  createEmployee(): void {
     this.error = null;
     this.success = null;
 
@@ -73,7 +75,7 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  resetForm() {
+  resetForm(): void {
     this.name = '';
     this.email = '';
     this.password = '';
@@ -81,7 +83,7 @@ export class AdminComponent implements OnInit {
     this.managerId = null;
   }
 
-  logout() {
+  logout(): void {
     this.auth.logout();
     location.href = '/login';
   }
