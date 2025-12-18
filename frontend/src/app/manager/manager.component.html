@@ -1,0 +1,88 @@
+<h2>Manager Dashboard</h2>
+
+<div *ngIf="loading">
+  Loading team dashboard...
+</div>
+
+<div *ngIf="!loading">
+
+  <!-- TEAM MEMBERS -->
+  <section>
+    <h3>My Team</h3>
+
+    <table border="1" width="100%">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+      </tr>
+      <tr *ngFor="let e of team">
+        <td>{{ e.name }}</td>
+        <td>{{ e.email }}</td>
+        <td>
+          <span
+            class="status-badge"
+            [ngClass]="'status-' + e.availabilityStatus">
+            {{ e.availabilityStatus }}
+          </span>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <hr />
+
+  <!-- LEAVE REQUESTS -->
+  <section>
+    <h3>Leave Requests</h3>
+
+    <table border="1" width="100%" *ngIf="leaves.length > 0">
+      <tr>
+        <th>Employee</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+
+      <tr *ngFor="let l of leaves">
+        <td>{{ l.employee.name }}</td>
+        <td>{{ l.fromDate }}</td>
+        <td>{{ l.toDate }}</td>
+        <td>{{ l.reason }}</td>
+        <td>{{ l.status }}</td>
+        <td *ngIf="l.status === 'PENDING'">
+          <button (click)="approve(l.id)">Approve</button>
+          <button (click)="reject(l.id)">Reject</button>
+        </td>
+        <td *ngIf="l.status !== 'PENDING'">—</td>
+      </tr>
+    </table>
+
+    <div *ngIf="leaves.length === 0">
+      No leave requests.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- TEAM CALENDAR -->
+  <section>
+    <h3>Team Calendar</h3>
+
+    <app-calendar
+      [attendance]="attendance"
+      [leaves]="leaves">
+    </app-calendar>
+  </section>
+
+  <hr />
+
+  <button class="secondary" (click)="logout()">Logout</button>
+
+</div>
+
+<div *ngIf="error" class="error">
+  {{ error }}
+</div>

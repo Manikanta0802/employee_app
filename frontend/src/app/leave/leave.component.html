@@ -1,0 +1,47 @@
+<h2>Leave Management</h2>
+
+<!-- Apply Leave -->
+<h3>Apply for Leave</h3>
+
+<label>From Date</label>
+<input type="date" [(ngModel)]="fromDate" />
+
+<label>To Date</label>
+<input type="date" [(ngModel)]="toDate" />
+
+<label>Reason</label>
+<textarea rows="3" [(ngModel)]="reason"></textarea>
+
+<br />
+<button (click)="submitLeave()" [disabled]="submitting">
+  {{ submitting ? 'Submitting...' : 'Submit Leave' }}
+</button>
+
+<hr />
+
+<!-- My Leaves -->
+<h3>My Leave Requests</h3>
+
+<div *ngIf="loading">Loading...</div>
+
+<table *ngIf="!loading" border="1" width="100%">
+  <tr>
+    <th>From</th>
+    <th>To</th>
+    <th>Reason</th>
+    <th>Status</th>
+  </tr>
+  <tr *ngFor="let l of leaves">
+    <td>{{ l.fromDate }}</td>
+    <td>{{ l.toDate }}</td>
+    <td>{{ l.reason }}</td>
+    <td>
+      <span class="status" [ngClass]="l.status.toLowerCase()">
+        {{ l.status }}
+      </span>
+    </td>
+  </tr>
+</table>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="success" class="success">{{ success }}</div>

@@ -1,27 +1,114 @@
-<h2>My Availability</h2>
+<h2>Employee Dashboard</h2>
 
-<div *ngIf="loading">Loading...</div>
+<!-- Loading -->
+<div *ngIf="loading">
+  Loading dashboard...
+</div>
 
+<!-- Main Content -->
 <div *ngIf="!loading && employee">
-  <p><strong>Name:</strong> {{ employee.name }}</p>
-  <p><strong>Email:</strong> {{ employee.email }}</p>
-  <p>
-    <strong>Current status:</strong>
-    <span class="status-badge" [ngClass]="'status-' + employee.availabilityStatus">
-      {{ employee.availabilityStatus }}
-    </span>
-  </p>
-  <label>Change status</label>
-<select [(ngModel)]="selectedStatus">
-  <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-</select>
 
-<button class="update-button" (click)="changeStatus(selectedStatus)">
-  Update Status
-</button>
+  <!-- Employee Info -->
+  <section>
+    <h3>My Profile</h3>
+    <p><strong>Name:</strong> {{ employee.name }}</p>
+    <p><strong>Email:</strong> {{ employee.email }}</p>
 
-  <button class="secondary" (click)="logout()">Logout</button>
+    <p>
+      <strong>Current Availability:</strong>
+      <span
+        class="status-badge"
+        [ngClass]="'status-' + employee.availabilityStatus">
+        {{ employee.availabilityStatus }}
+      </span>
+    </p>
+  </section>
 
-  <div *ngIf="error" class="error">{{ error }}</div>
-  <div *ngIf="success" class="success">{{ success }}</div>
+  <hr />
+
+  <!-- Availability Update -->
+  <section>
+    <h3>Update Availability</h3>
+
+    <label>Status</label>
+    <select [(ngModel)]="selectedStatus">
+      <option *ngFor="let s of statuses" [value]="s">
+        {{ s }}
+      </option>
+    </select>
+
+    <br /><br />
+
+    <button
+      class="update-button"
+      (click)="changeStatus(selectedStatus)"
+      [disabled]="saving">
+      {{ saving ? 'Updating...' : 'Update Status' }}
+    </button>
+  </section>
+
+  <hr />
+
+  <!-- Attendance Actions -->
+  <section>
+    <h3>Attendance</h3>
+
+    <button (click)="checkIn()">Check In</button>
+    <button (click)="checkOut()">Check Out</button>
+  </section>
+
+  <hr />
+
+  <!-- Attendance Logs -->
+  <section>
+    <h3>My Attendance Logs</h3>
+
+    <table border="1" width="100%" *ngIf="attendance.length > 0">
+      <tr>
+        <th>Date</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+      </tr>
+      <tr *ngFor="let a of attendance">
+        <td>{{ a.date }}</td>
+        <td>{{ a.checkIn || '-' }}</td>
+        <td>{{ a.checkOut || '-' }}</td>
+      </tr>
+    </table>
+
+    <div *ngIf="attendance.length === 0">
+      No attendance records found.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Navigation -->
+  <section>
+    <a routerLink="/leave">Apply Leave</a>
+    |
+    <button class="secondary" (click)="logout()">Logout</button>
+  </section>
+
+  <hr />
+
+  <!-- Calendar -->
+  <section>
+    <h3>Attendance & Leave Calendar</h3>
+
+    <app-calendar
+      [attendance]="attendance"
+      [leaves]="leaves">
+    </app-calendar>
+  </section>
+
+  <!-- Messages -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="success">
+    {{ success }}
+  </div>
+
 </div>

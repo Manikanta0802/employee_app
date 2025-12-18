@@ -1,5 +1,4 @@
-/* Styles for Availability Component */
-
+/* Existing styles */
 .status-badge {
   padding: 4px 10px;
   border-radius: 12px;
@@ -27,4 +26,50 @@ select {
   padding: 6px;
   border-radius: 4px;
   margin-top: 8px;
+}
+
+/* New styles */
+table {
+  margin-top: 12px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: left;
+}
+
+th {
+  background-color: #f3f3f3;
+}
+
+button {
+  margin-right: 8px;
+  margin-top: 6px;
+}
+
+.error {
+  color: #b30000;
+  margin-top: 8px;
+}
+
+.success {
+  color: #0b7a27;
+  margin-top: 8px;
+}
+
+table {
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 6px;
+  text-align: center;
+}
+
+button {
+  margin: 4px;
 }

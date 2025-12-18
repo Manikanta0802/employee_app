@@ -1,0 +1,87 @@
+<h2>HR Admin Dashboard</h2>
+
+<div *ngIf="loading">
+  Loading employees...
+</div>
+
+<div *ngIf="!loading">
+
+  <!-- CREATE EMPLOYEE -->
+  <section class="card">
+    <h3>Create Employee / Manager</h3>
+
+    <label>Name</label>
+    <input [(ngModel)]="name" />
+
+    <label>Email</label>
+    <input [(ngModel)]="email" />
+
+    <label>Password</label>
+    <input type="password" [(ngModel)]="password" />
+
+    <label>Role</label>
+    <select [(ngModel)]="role">
+      <option value="EMPLOYEE">EMPLOYEE</option>
+      <option value="MANAGER">MANAGER</option>
+      <option value="ADMIN">ADMIN</option>
+    </select>
+
+    <label>Reporting Manager</label>
+    <select [(ngModel)]="managerId">
+      <option [ngValue]="null">None</option>
+      <option *ngFor="let e of employees" [ngValue]="e.id">
+        {{ e.name }} ({{ e.role }})
+      </option>
+    </select>
+
+    <br /><br />
+
+    <button class="primary" (click)="createEmployee()">
+      Create
+    </button>
+  </section>
+
+  <hr />
+
+  <!-- EMPLOYEE LIST -->
+  <section>
+    <h3>All Employees</h3>
+
+    <table border="1" width="100%">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Manager</th>
+        <th>Status</th>
+      </tr>
+
+      <tr *ngFor="let e of employees">
+        <td>{{ e.name }}</td>
+        <td>{{ e.email }}</td>
+        <td>{{ e.role }}</td>
+        <td>{{ e.managerName || '-' }}</td>
+        <td>
+          <span
+            class="status-badge"
+            [ngClass]="'status-' + e.availabilityStatus">
+            {{ e.availabilityStatus }}
+          </span>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <hr />
+
+  <button class="secondary" (click)="logout()">Logout</button>
+
+</div>
+
+<div *ngIf="error" class="error">
+  {{ error }}
+</div>
+
+<div *ngIf="success" class="success">
+  {{ success }}
+</div>

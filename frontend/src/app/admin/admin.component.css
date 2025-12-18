@@ -1,0 +1,58 @@
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input, select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
+
+table {
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 8px;
+}
+
+th {
+  background-color: #f3f4f6;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.status-AVAILABLE {
+  background-color: #c7f5d9;
+}
+
+.status-UNAVAILABLE {
+  background-color: #ffdddd;
+}
+
+.status-ON_LEAVE {
+  background-color: #ffecc2;
+}
+
+.error {
+  color: #c0392b;
+}
+
+.success {
+  color: #27ae60;
+}
+    

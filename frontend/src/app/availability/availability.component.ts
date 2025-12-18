@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { EmployeeService } from '../services/employee.service';
+import { AttendanceService } from '../services/attendance.service';
+import { LeaveService } from '../services/leave.service';
 import { AuthService } from '../services/auth.service';
-import { EmployeeMe } from '../models';
-import { FormsModule } from '@angular/forms';   // <-- IMPORTANT
+
+import { EmployeeMe, Attendance, LeaveRequest } from '../models';
+import { CalendarComponent } from '../calendar/calendar.component';
+
 
 @Component({
   selector: 'app-availability',
@@ -12,7 +18,8 @@ import { FormsModule } from '@angular/forms';   // <-- IMPORTANT
   imports: [
     CommonModule,
     RouterLink,
-    FormsModule         // <-- REQUIRED for ngModel
+    FormsModule,
+    CalendarComponent
   ],
   templateUrl: './availability.component.html',
   styleUrls: ['./availability.component.css']
@@ -20,42 +27,71 @@ import { FormsModule } from '@angular/forms';   // <-- IMPORTANT
 export class AvailabilityComponent implements OnInit {
 
   employee: EmployeeMe | null = null;
+  attendance: Attendance[] = [];
+  leaves: LeaveRequest[] = [];
+
   loading = true;
   saving = false;
   error: string | null = null;
   success: string | null = null;
 
-  // Dropdown values
   statuses: Array<'AVAILABLE' | 'UNAVAILABLE' | 'ON_LEAVE'> = [
-    'AVAILABLE', 'UNAVAILABLE', 'ON_LEAVE'
+    'AVAILABLE',
+    'UNAVAILABLE',
+    'ON_LEAVE'
   ];
 
-  // ⬅️ Selected dropdown value (separate from employee data)
   selectedStatus: 'AVAILABLE' | 'UNAVAILABLE' | 'ON_LEAVE' = 'AVAILABLE';
 
   constructor(
     private employeeService: EmployeeService,
+    private attendanceService: AttendanceService,
+    private leaveService: LeaveService,
     private auth: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.fetch();
+    this.loadDashboard();
   }
 
-  fetch() {
+  loadDashboard() {
     this.loading = true;
-    this.error = null;
 
     this.employeeService.getSelf().subscribe({
-      next: (emp) => {
+      next: emp => {
         this.employee = emp;
-        this.selectedStatus = emp.availabilityStatus;  // <-- set dropdown default
+        this.selectedStatus = emp.availabilityStatus;
+        this.loadAttendance();
+        this.loadLeaves();
+      },
+      error: () => {
+        this.error = 'Failed to load employee';
+        this.loading = false;
+      }
+    });
+  }
+
+  loadAttendance() {
+    this.attendanceService.myAttendance().subscribe({
+      next: logs => {
+        this.attendance = logs;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err?.error || 'Failed to load profile';
+      error: () => {
+        this.error = 'Failed to load attendance';
         this.loading = false;
+      }
+    });
+  }
+
+  loadLeaves() {
+    this.leaveService.myLeaves().subscribe({
+      next: data => {
+        this.leaves = data;
+      },
+      error: () => {
+        this.error = 'Failed to load leave data';
       }
     });
   }
@@ -68,15 +104,39 @@ export class AvailabilityComponent implements OnInit {
     this.success = null;
 
     this.employeeService.updateAvailability(status).subscribe({
-      next: (emp) => {
+      next: emp => {
         this.employee = emp;
-        this.selectedStatus = emp.availabilityStatus;  // <-- refresh UI
-        this.saving = false;
+        this.selectedStatus = emp.availabilityStatus;
         this.success = 'Availability updated';
-      },
-      error: (err) => {
-        this.error = err?.error || 'Failed to update';
         this.saving = false;
+      },
+      error: () => {
+        this.error = 'Failed to update availability';
+        this.saving = false;
+      }
+    });
+  }
+
+  checkIn() {
+    this.attendanceService.checkIn().subscribe({
+      next: () => {
+        this.success = 'Checked in successfully';
+        this.loadAttendance();
+      },
+      error: err => {
+        this.error = err?.error || 'Check-in failed';
+      }
+    });
+  }
+
+  checkOut() {
+    this.attendanceService.checkOut().subscribe({
+      next: () => {
+        this.success = 'Checked out successfully';
+        this.loadAttendance();
+      },
+      error: err => {
+        this.error = err?.error || 'Check-out failed';
       }
     });
   }

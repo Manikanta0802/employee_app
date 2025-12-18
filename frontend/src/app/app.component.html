@@ -1,5 +1,29 @@
-<div class="app-container">
-  <div class="app-card">
-    <router-outlet></router-outlet>
-  </div>
-</div>
+<!-- NAVBAR -->
+<nav *ngIf="auth.isLoggedIn()" class="navbar">
+
+  <span class="brand">Employee Portal</span>
+
+  <!-- EMPLOYEE -->
+  <ng-container *ngIf="role === 'EMPLOYEE'">
+    <a routerLink="/availability">Dashboard</a>
+    <a routerLink="/leave">Leave</a>
+  </ng-container>
+
+  <!-- MANAGER -->
+  <ng-container *ngIf="role === 'MANAGER'">
+    <a routerLink="/manager">Manager Dashboard</a>
+  </ng-container>
+
+  <!-- ADMIN -->
+  <ng-container *ngIf="role === 'ADMIN'">
+    <a routerLink="/admin">Admin Panel</a>
+  </ng-container>
+
+  <!-- RIGHT -->
+  <span class="spacer"></span>
+  <button (click)="logout()">Logout</button>
+
+</nav>
+
+<!-- ROUTER CONTENT -->
+<router-outlet></router-outlet>

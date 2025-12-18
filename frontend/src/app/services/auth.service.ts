@@ -3,39 +3,37 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { AuthResponse } from '../models';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+
   private apiUrl = `/api`;
   private tokenKey = 'ea_token';
+  private roleKey = 'ea_role';
 
   currentUser$ = new BehaviorSubject<AuthResponse | null>(null);
 
   constructor(private http: HttpClient) {
     const token = this.getToken();
-    if (token) {
-      // We don't decode here; backend is source of truth.
-      this.currentUser$.next(null);
-    }
-  }
+    const role = this.getRole();
 
-  register(data: { name: string; email: string; password: string }) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data)
-      .pipe(
-        tap(res => this.setSession(res))
-      );
+    if (token && role) {
+      this.currentUser$.next({ token, role });
+    }
   }
 
   login(data: { email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, data)
-      .pipe(
-        tap(res => this.setSession(res))
-      );
+      .pipe(tap(res => this.setSession(res)));
+  }
+
+  register(data: { name: string; email: string; password: string }) {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data)
+      .pipe(tap(res => this.setSession(res)));
   }
 
   private setSession(res: AuthResponse) {
     localStorage.setItem(this.tokenKey, res.token);
+    localStorage.setItem(this.roleKey, res.role);
     this.currentUser$.next(res);
   }
 
@@ -43,12 +41,20 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  getRole(): 'EMPLOYEE' | 'MANAGER' | 'ADMIN' | null {
+    return localStorage.getItem(this.roleKey) as any;
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
+  hasRole(role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN'): boolean {
+    return this.getRole() === role;
+  }
+
   logout() {
-    localStorage.removeItem(this.tokenKey);
+    localStorage.clear();
     this.currentUser$.next(null);
   }
 }

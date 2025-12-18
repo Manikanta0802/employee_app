@@ -1,0 +1,40 @@
+input, textarea {
+  display: block;
+  margin-bottom: 8px;
+  padding: 6px;
+  width: 250px;
+}
+
+button {
+  margin-top: 8px;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}

@@ -1,4 +1,7 @@
-/* styles for app component */
+/* =========================
+   GLOBAL LAYOUT
+========================= */
+
 /* Global container to center content */
 .app-container {
   display: flex;
@@ -27,7 +30,43 @@
   margin-bottom: 20px;
 }
 
-/* Buttons */
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  background-color: #1f2937;
+  color: #ffffff;
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 700;
+  margin-right: 24px;
+}
+
+.navbar a {
+  color: #e5e7eb;
+  margin-right: 18px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
 button {
   padding: 10px 18px;
   border-radius: 6px;
@@ -43,13 +82,29 @@ button.primary {
 
 button.secondary {
   background-color: #ddd;
+  color: #333;
 }
 
 button:hover {
   opacity: 0.9;
 }
 
-/* Status badge */
+/* Logout button in navbar */
+.navbar button {
+  background-color: #ef4444;
+  color: white;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.navbar button:hover {
+  background-color: #dc2626;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
+
 .status-badge {
   padding: 4px 10px;
   border-radius: 12px;
@@ -73,7 +128,10 @@ button:hover {
   color: #a66b00;
 }
 
-/* Error and success messages */
+/* =========================
+   MESSAGES
+========================= */
+
 .error {
   margin-top: 12px;
   color: #c0392b;

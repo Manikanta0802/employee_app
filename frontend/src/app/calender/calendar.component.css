@@ -1,0 +1,50 @@
+.calendar {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-header button {
+  background: #e5e7eb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.weekdays, .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays div {
+  text-align: center;
+  font-weight: 600;
+  padding: 6px 0;
+}
+
+.day {
+  height: 70px;
+  border: 1px solid #eee;
+  text-align: right;
+  padding: 6px;
+  font-size: 13px;
+}
+
+/* Attendance */
+.attendance {
+  background-color: #d1fae5;
+}
+
+/* Leave */
+.leave {
+  background-color: #fde68a;
+}

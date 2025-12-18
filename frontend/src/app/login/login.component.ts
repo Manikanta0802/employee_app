@@ -45,4 +45,22 @@ export class LoginComponent {
       }
     });
   }
+
+  login() {
+    this.auth.login(this.form.value).subscribe({
+      next: res => {
+        if (res.role === 'ADMIN') {
+          this.router.navigate(['/admin']);
+        } else if (res.role === 'MANAGER') {
+          this.router.navigate(['/manager']);
+        } else {
+          this.router.navigate(['/availability']);
+        }
+      },
+      error: err => {
+        this.error = err?.error || 'Login failed';
+      }
+    });
+  }
+
 }
