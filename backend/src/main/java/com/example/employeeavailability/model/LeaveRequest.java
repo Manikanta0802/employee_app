@@ -4,16 +4,17 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "leave_requests")
 public class LeaveRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Employee employee;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Employee manager;
 
     private LocalDate fromDate;
@@ -24,5 +25,24 @@ public class LeaveRequest {
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
 
-    // Add Getters and Setters here
+    // getters & setters
+    public Long getId() { return id; }
+
+    public Employee getEmployee() { return employee; }
+    public void setEmployee(Employee employee) { this.employee = employee; }
+
+    public Employee getManager() { return manager; }
+    public void setManager(Employee manager) { this.manager = manager; }
+
+    public LocalDate getFromDate() { return fromDate; }
+    public void setFromDate(LocalDate fromDate) { this.fromDate = fromDate; }
+
+    public LocalDate getToDate() { return toDate; }
+    public void setToDate(LocalDate toDate) { this.toDate = toDate; }
+
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
+
+    public LeaveStatus getStatus() { return status; }
+    public void setStatus(LeaveStatus status) { this.status = status; }
 }
