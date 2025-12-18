@@ -1,18 +1,14 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-
+import { Routes } from '@angular/router';
+import { AvailabilityComponent } from './availability/availability.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { AvailabilityComponent } from './availability/availability.component';
+import { LeaveComponent } from './leave/leave.component';
 import { ManagerComponent } from './manager/manager.component';
 import { AdminComponent } from './admin/admin.component';
-import { LeaveComponent } from './leave/leave.component';
+import { authGuard } from './guards/auth.guard';
 
-import { AuthGuard } from './guards/auth.guard';
-import { RoleGuard } from './guards/role.guard';
-
-const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+export const routes: Routes = [
+  { path: '', redirectTo: 'availability', pathMatch: 'full' },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
@@ -20,33 +16,21 @@ const routes: Routes = [
   {
     path: 'availability',
     component: AvailabilityComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['EMPLOYEE'] }
+    canActivate: [authGuard]
   },
   {
     path: 'leave',
     component: LeaveComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['EMPLOYEE'] }
+    canActivate: [authGuard]
   },
   {
     path: 'manager',
     component: ManagerComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['MANAGER'] }
+    canActivate: [authGuard]
   },
   {
     path: 'admin',
     component: AdminComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['ADMIN'] }
-  },
-
-  { path: '**', redirectTo: 'login' }
+    canActivate: [authGuard]
+  }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule {}

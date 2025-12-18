@@ -67,7 +67,7 @@ export class AdminComponent implements OnInit {
         this.resetForm();
         this.loadEmployees();
       },
-      error: err => {
+      error: (err: any) => {
         this.error = err?.error || 'Creation failed';
       }
     });

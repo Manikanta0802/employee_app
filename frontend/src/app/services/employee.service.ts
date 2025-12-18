@@ -3,27 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EmployeeMe } from '../models';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class EmployeeService {
 
-  private apiUrl = '/api';
+  private apiUrl = `/api`;
 
   constructor(private http: HttpClient) {}
 
-  // =====================
-  // EMPLOYEE APIs
-  // =====================
-
-  /** Logged-in employee profile */
   getSelf(): Observable<EmployeeMe> {
-    return this.http.get<EmployeeMe>(
-      `${this.apiUrl}/employees/me`
-    );
+    return this.http.get<EmployeeMe>(`${this.apiUrl}/employees/me`);
   }
 
-  /** Update availability status */
   updateAvailability(
     status: 'AVAILABLE' | 'UNAVAILABLE' | 'ON_LEAVE'
   ): Observable<EmployeeMe> {
@@ -33,28 +23,14 @@ export class EmployeeService {
     );
   }
 
-  // =====================
-  // ADMIN (HR) APIs
-  // =====================
-
-  /** Get all employees (HR only) */
-  getAll(): Observable<EmployeeMe[]> {
-    return this.http.get<EmployeeMe[]>(
-      `${this.apiUrl}/admin/employees`
-    );
-  }
-
-  /** Create employee / manager (HR only) */
-  createUser(data: {
+  // ADMIN
+  create(data: {
     name: string;
     email: string;
     password: string;
-    role: 'EMPLOYEE' | 'MANAGER';
+    role: string;
     managerId?: number | null;
   }) {
-    return this.http.post(
-      `${this.apiUrl}/admin/create-user`,
-      data
-    );
+    return this.http.post(`${this.apiUrl}/admin/create`, data);
   }
 }

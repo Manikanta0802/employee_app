@@ -3,10 +3,11 @@
 // =========================
 export interface AuthResponse {
   token: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN';
 }
+
 
 // =========================
 // EMPLOYEE
