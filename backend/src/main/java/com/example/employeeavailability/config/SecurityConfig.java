@@ -34,26 +34,24 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Root page safe
-                        .requestMatchers("/").permitAll()
-
-                        // Public endpoints
-                        .requestMatchers("/hello", "/health").permitAll()
-
-                        // Actuator endpoints public
+                        // Public
+                        .requestMatchers("/", "/hello", "/health").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-
-                        // Authentication APIs public (POST + GET)
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Employee APIs require authentication
-                        .requestMatchers("/api/employees/**").authenticated()
+                        // HR Admin only
+                        .requestMatchers("/api/admin/**").hasRole("HR_ADMIN")
 
-                        // Everything else requires login
+                        // Manager only
+                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
+
+                        // Employee
+                        .requestMatchers("/api/employees/**").hasAnyRole("EMPLOYEE", "MANAGER", "HR_ADMIN")
+
+                        // Everything else
                         .anyRequest().authenticated()
                 )
 
-                // Add JWT filter before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

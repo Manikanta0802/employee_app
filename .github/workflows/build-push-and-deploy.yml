@@ -75,7 +75,7 @@ jobs:
       - name: Build Frontend Image
         run: |
           docker build -t ghcr.io/${REPO_OWNER_LC}/employee-frontend:${{ github.run_number }} frontend
-
+          
       # ------------------------------
       # Push to GHCR
       # ------------------------------
@@ -84,6 +84,9 @@ jobs:
           docker push ghcr.io/${REPO_OWNER_LC}/employee-backend:${{ github.run_number }}
           docker push ghcr.io/${REPO_OWNER_LC}/employee-frontend:${{ github.run_number }}
 
+
+
+#CD starts here
       # ---------------------------
       # Trigger deployment on EC2 using SSM
       # ---------------------------

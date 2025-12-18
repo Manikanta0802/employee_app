@@ -43,10 +43,27 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // ✅ NEW
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    // ✅ NEW
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
+    }
+
     public String generateToken(Employee employee) {
         Map<String, Object> claims = new HashMap<>();
+
+        // existing claims
         claims.put("name", employee.getName());
         claims.put("availabilityStatus", employee.getAvailabilityStatus().name());
+
+        // ✅ NEW claims
+        claims.put("role", employee.getRole().name());
+        claims.put("userId", employee.getId());
+
         return generateToken(claims, employee.getEmail());
     }
 
