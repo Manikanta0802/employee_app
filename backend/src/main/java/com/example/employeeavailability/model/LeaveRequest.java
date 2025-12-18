@@ -1,3 +1,8 @@
+package com.example.employeeavailability.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
 @Entity
 public class LeaveRequest {
 
@@ -18,4 +23,6 @@ public class LeaveRequest {
 
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
+
+    // Add Getters and Setters here
 }

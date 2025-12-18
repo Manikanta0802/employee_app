@@ -1,3 +1,9 @@
+package com.example.employeeavailability.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 public class Attendance {
 
@@ -11,4 +17,6 @@ public class Attendance {
     private LocalDate date;
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;
+
+    // Standard Getters and Setters (or use @Data if you have Lombok)
 }
